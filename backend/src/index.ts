@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth.routes';
 import { setupSwagger } from './docs/swagger';
+import userRoutes from './routes/user.routes';
+
 dotenv.config();
 
 const app: Express = express();
@@ -22,6 +24,7 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 
 mongoose.connect(process.env.MONGO_URI ?? "mongodb://localhost:27017/library_db")

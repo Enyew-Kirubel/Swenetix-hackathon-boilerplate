@@ -12,6 +12,16 @@ const options = {
     servers: [
       { url: 'http://localhost:5000' }
     ],
+     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Enter your JWT token in the format: Bearer <token>',
+        },
+      },
+    },
   },
   // This tells Swagger to scan all files in the routes folder for comments!
   apis: ['./src/routes/*.ts'], 

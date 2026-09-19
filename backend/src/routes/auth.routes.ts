@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { registerHandler, loginHandler } from '../controllers/auth.controller';
+import { registerHandler, loginHandler, logoutHandler } from '../controllers/auth.controller';
 
 const router = Router();
 
@@ -104,5 +104,33 @@ router.post('/register', registerHandler);
  *         description: Internal server error
  */
 router.post('/login', loginHandler);
+
+
+
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Log out the current user
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Log out successful
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/logout', logoutHandler);
 
 export default router;
