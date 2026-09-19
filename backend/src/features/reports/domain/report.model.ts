@@ -1,5 +1,17 @@
 import { Schema, model, Document, Types } from "mongoose";
 
+export const CATEGORIES = [
+  "Electronics",
+  "Clothing",
+  "Documents",
+  "Accessories",
+  "Bags",
+  "Keys",
+  "Jewelry",
+  "Pets",
+  "Other",
+] as const;
+
 export interface IReport extends Document {
   type: "LOST" | "FOUND";
   title: string;
@@ -23,52 +35,52 @@ const reportSchema = new Schema<IReport>(
       enum: ["LOST", "FOUND"],
       required: true,
     },
+
     title: {
       type: String,
       required: true,
       trim: true,
     },
+
     description: {
       type: String,
       required: true,
     },
+
     category: {
       type: String,
-      enum: [
-        "Electronics",
-        "Clothing",
-        "Documents",
-        "Accessories",
-        "Bags",
-        "Keys",
-        "Jewelry",
-        "Pets",
-        "Other",
-      ],
+      enum: CATEGORIES,
       required: true,
     },
+
     location: {
       type: String,
       required: true,
     },
+
     date: {
       type: Date,
       required: true,
     },
+
     imagePath: {
       type: String,
     },
+
     color: {
       type: String,
     },
+
     brand: {
       type: String,
     },
+
     status: {
       type: String,
       enum: ["OPEN", "RESOLVED"],
       default: "OPEN",
     },
+
     reporter: {
       type: Schema.Types.ObjectId,
       ref: "User",

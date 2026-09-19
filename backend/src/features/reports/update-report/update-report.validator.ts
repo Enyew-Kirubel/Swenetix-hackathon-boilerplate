@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { CATEGORIES } from '../../models/report.model';
-
+import { CATEGORIES } from '../domain/report.model';
 export const updateReportSchema = z
     .object({
         title: z.string().trim().min(3).max(150),

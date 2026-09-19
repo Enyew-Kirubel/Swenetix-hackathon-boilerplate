@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { asyncHandler } from '../../utils/asyncHandler';
-import { ApiError } from '../../utils/apiError';
+import { asyncHandler } from '../../../utils/asyncHandler';
+import { ApiError } from '../../../utils/apiError';
 import { deleteReport } from './delete-report.service';
 
 export const deleteReportController = asyncHandler(async (req: Request, res: Response) => {

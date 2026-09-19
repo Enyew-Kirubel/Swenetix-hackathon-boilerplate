@@ -1,4 +1,4 @@
-import { Report } from '../../models/report.model';
+import Report from "../domain/report.model";
 import { SearchReportsQuery } from './search-reports.validator';
 
 // Escape regex special characters so "a.b*" is treated as plain text

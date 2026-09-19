@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
-import { Report } from '../../models/report.model';
-import { ApiError } from '../../utils/apiError';
+import { Report } from '../../../models/report.model';
+import { ApiError } from '../../../utils/apiError';
 
 export async function deleteReport(reportId: string, userId: string): Promise<void> {
     if (!Types.ObjectId.isValid(reportId)) throw new ApiError(400, 'Invalid report id');

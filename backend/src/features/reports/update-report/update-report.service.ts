@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
-import { Report } from '../../models/report.model';
-import { ApiError } from '../../utils/apiError';
+import Report from "../domain/report.model";
+import { ApiError } from '../../../utils/apiError';
 import { UpdateReportInput } from './update-report.validator';
 
 export async function updateReport(reportId: string, userId: string, data: UpdateReportInput) {
@@ -8,11 +8,14 @@ export async function updateReport(reportId: string, userId: string, data: Updat
 
     const report = await Report.findById(reportId);
     if (!report) throw new ApiError(404, 'Report not found');
-    if (report.user.toString() !== userId)
+
+    if (report.reporter.toString() !== userId)
         throw new ApiError(403, "Forbidden: you don't own this report");
 
     report.set(data);
-    await report.save(); // runs schema validators and bumps updatedAt
-    await report.populate('user', 'name phone');
+    await report.save();
+
+    await report.populate('reporter', 'name phone');
+
     return report;
 }

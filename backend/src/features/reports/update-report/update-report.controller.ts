@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { asyncHandler } from '../../utils/asyncHandler';
-import { ApiError } from '../../utils/apiError';
+import { asyncHandler } from '../../../utils/asyncHandler';
+import { ApiError } from '../../../utils/apiError';
 import { updateReport } from './update-report.service';
 
 export const updateReportController = asyncHandler(async (req: Request, res: Response) => {
