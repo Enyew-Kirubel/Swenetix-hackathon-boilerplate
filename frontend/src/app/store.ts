@@ -1,6 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import genericReducer from "../features/generic/genericSlice";
-import { TASKS_CACHE_KEY } from "../lib/storage";
+import authReducer from "../features/auth/authSlice";
+import tasksReducer from "../features/tasks/tasksSlice";
+import presenceReducer from "../features/presence/presenceSlice";
+import { TASKS_CACHE_KEY, writeJSON } from "../lib/storage";
 
 export const store = configureStore({
   reducer: {
