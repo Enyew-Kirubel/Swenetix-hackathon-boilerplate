@@ -1,8 +1,9 @@
-import { DragEvent } from "react";
+import { DragEvent, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { deleteTask } from "../features/tasks/tasksThunks";
 import { isTempId } from "../lib/outbox";
 import type { Task } from "../types";
+import ConfirmDialog from "./ConfirmDialog";
 
 interface Props {
   task: Task;
@@ -17,6 +18,7 @@ export default function TaskCard({ task, isDragging, onOpen, onDragStart, onDrag
   const me = useAppSelector((s) => s.auth.user);
   const editor = useAppSelector((s) => s.presence.editing.find((e) => e.taskId === task.id));
   const someoneElseEditing = editor && editor.userId !== me?.id;
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData("text/plain", task.id);
@@ -26,9 +28,7 @@ export default function TaskCard({ task, isDragging, onOpen, onDragStart, onDrag
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm(`Delete "${task.title}" for everyone?`)) {
-      dispatch(deleteTask(task.id));
-    }
+    setConfirmingDelete(true);
   };
 
   return (
@@ -52,6 +52,18 @@ export default function TaskCard({ task, isDragging, onOpen, onDragStart, onDrag
         {isTempId(task.id) && <span className="unsynced-badge">Not synced yet</span>}
         {someoneElseEditing && <span className="editing-badge">{editor!.username} is editing</span>}
       </div>
+
+      {confirmingDelete && (
+        <ConfirmDialog
+          title="Delete task?"
+          message={`"${task.title}" will be deleted for everyone.`}
+          onCancel={() => setConfirmingDelete(false)}
+          onConfirm={() => {
+            setConfirmingDelete(false);
+            dispatch(deleteTask(task.id));
+          }}
+        />
+      )}
     </div>
   );
 }

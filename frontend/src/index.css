@@ -473,3 +473,17 @@ label textarea {
   color: #0c66e4;
   font-weight: 600;
 }
+
+
+/* Confirm dialog */
+.modal.confirm {
+  max-width: 380px;
+}
+
+.modal.confirm p {
+  margin: 0 0 1rem;
+}
+
+button.danger {
+  background: var(--danger);
+}
