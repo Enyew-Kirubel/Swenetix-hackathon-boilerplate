@@ -1,6 +1,7 @@
 import Borrowing from "../models/Borrowing";
 import Book from "../models/Book";
 import { User } from "../models/User";
+import { id } from "zod/v4/locales";
 
 interface CreateBorrowingData {
   userId: string;
@@ -47,6 +48,7 @@ export const createBorrowing = async (
 
   // Create borrowing record
   const borrowing = await Borrowing.create({
+    id,
     userId,
     bookId,
     borrowedAt,

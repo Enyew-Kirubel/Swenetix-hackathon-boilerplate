@@ -60,6 +60,7 @@ export const registerHandler = async (req: Request, res: Response): Promise<Resp
       token,
       role: userObj.role,
       user: {
+        id: userObj._id,
         firstName: userObj.firstName,
         lastName: userObj.lastName,
         email: userObj.email,
