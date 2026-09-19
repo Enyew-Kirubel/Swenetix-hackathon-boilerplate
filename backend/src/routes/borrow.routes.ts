@@ -3,6 +3,8 @@ import {
   borrowBook,
   returnBook,
 } from "../controllers/borrow.controller";
+import { verifyToken } from "../middleware/auth";
+import { requireAdmin } from "../middleware/auth";
 
 const router = Router();
 
@@ -36,7 +38,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.post("/", borrowBook);
+router.post("/", verifyToken, requireAdmin, borrowBook);
 
 /**
  * @swagger
@@ -65,6 +67,6 @@ router.post("/", borrowBook);
  *       500:
  *         description: Internal server error
  */
-router.put("/:id/return", returnBook);
+router.put("/:id/return", verifyToken, requireAdmin, returnBook);
 
 export default router;
