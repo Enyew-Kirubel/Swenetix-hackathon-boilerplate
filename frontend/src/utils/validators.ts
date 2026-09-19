@@ -7,6 +7,6 @@ export function validateReportForm(data: ReportFormData) {
   if (!data.description.trim()) errors.description = 'Description is required';
   if (!data.category) errors.category = 'Category is required';
   if (!data.location.trim()) errors.location = 'Location is required';
-  if (!['OPEN', 'RESOLVED'].includes(data.status)) errors.status = 'Status must be LOST or FOUND';
+  if (!['OPEN', 'RESOLVED'].includes(data.status)) errors.status = 'Status must be OPEN or RESOLVED';
   return { valid: Object.keys(errors).length === 0, errors };
 }
