@@ -10,29 +10,6 @@ A minimal, ready-to-extend backend for a MERN stack app, written in TypeScript w
 - **ts-node + nodemon** – dev server with auto-reload
 - **cors**, **dotenv** – standard middleware/config
 
-## Project structure
-
-```
-mern-backend/
-├── src/
-│   ├── config/
-│   │   └── db.ts              # MongoDB connection
-│   ├── controllers/
-│   │   └── userController.ts  # Example CRUD logic
-│   ├── middleware/
-│   │   └── errorHandler.ts    # 404 + error handling
-│   ├── models/
-│   │   └── User.ts            # Example Mongoose model
-│   ├── routes/
-│   │   └── userRoutes.ts      # /api/users routes
-│   └── index.ts                # App entry point
-├── .env.example
-├── .gitignore
-├── nodemon.json
-├── package.json
-└── tsconfig.json
-```
-
 ## Getting started
 
 1. **Install dependencies**
@@ -55,11 +32,7 @@ mern-backend/
    NODE_ENV=development
    ```
 
-3. **Run MongoDB**
-
-   Make sure MongoDB is running locally, or point `MONGO_URI` to a hosted instance (e.g. MongoDB Atlas).
-
-4. **Run the dev server**
+3. **Run the dev server**
 
    ```bash
    npm run dev
@@ -67,7 +40,7 @@ mern-backend/
 
    Server starts on `http://localhost:5000` (or whatever `PORT` you set), with auto-reload on file changes.
 
-5. **Build & run in production**
+4. **Build & run in production**
 
    ```bash
    npm run build
@@ -94,10 +67,3 @@ Example create request body:
   "email": "ada@example.com"
 }
 ```
-
-## Next steps
-
-- Add authentication (e.g. JWT) via a new `middleware/auth.ts`
-- Add request validation (e.g. `zod` or `express-validator`)
-- Add more models/routes/controllers following the `User` pattern
-- Connect a React frontend and set `cors()` origin accordingly
