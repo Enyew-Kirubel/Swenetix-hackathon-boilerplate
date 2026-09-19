@@ -1,9 +1,11 @@
-import { configureStore } from "@reduxjs/toolkit";
-import genericReducer from "../features/generic/genericSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import reportsReducer from '../store/slices/reportSlice';
+import authReducer from '../store/slices/authSlice';
 
 export const store = configureStore({
   reducer: {
-    generic: genericReducer,
+    reports: reportsReducer,
+    auth: authReducer,
   },
 });
 

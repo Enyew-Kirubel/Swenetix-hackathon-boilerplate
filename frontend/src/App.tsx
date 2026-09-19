@@ -1,44 +1,63 @@
-import { useSelector, useDispatch } from "react-redux";
-import {
-  increment,
-  decrement,
-  setMessage,
-  reset,
-} from "./features/generic/genericSlice";
-import type { RootState, AppDispatch } from "./app/store";
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/layout/Navbar";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
-function App() {
-  const count = useSelector((state: RootState) => state.generic.count);
-  const message = useSelector((state: RootState) => state.generic.message);
-  const dispatch: AppDispatch = useDispatch();
+import LandingPage from "./app/LandingPage";
+import Home from "./app/Home";
+import ReportDetail from "./app/ReportDetail";
+import CreateReport from "./app/CreateReport";
+import EditReport from "./app/EditReport";
+import NotFound from "./app/NotFound";
+import Login from "./app/Login";
 
+export default function App() {
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>Redux Starter</h1>
-      <p>{message}</p>
-      <p>Count: {count}</p>
+    <>
+      <Navbar />
 
-      <button onClick={() => dispatch(increment())}>Increment</button>
-      <button
-        onClick={() => dispatch(decrement())}
-        style={{ marginLeft: "0.5rem" }}
-      >
-        Decrement
-      </button>
-      <button
-        onClick={() => dispatch(setMessage("Redux Toolkit is active"))}
-        style={{ marginLeft: "0.5rem" }}
-      >
-        Set message
-      </button>
-      <button
-        onClick={() => dispatch(reset())}
-        style={{ marginLeft: "0.5rem" }}
-      >
-        Reset
-      </button>
-    </div>
+      <Routes>
+        {/* Public landing page */}
+        <Route path="/" element={<LandingPage />} />
+
+        {/* Authentication */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Protected report feed */}
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Create report */}
+        <Route
+          path="/reports/new"
+          element={
+            <ProtectedRoute>
+              <CreateReport />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Report details */}
+        <Route path="/reports/:id" element={<ReportDetail />} />
+
+        {/* Edit report */}
+        <Route
+          path="/reports/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditReport />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   );
 }
-
-export default App;
