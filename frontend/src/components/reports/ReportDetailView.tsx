@@ -1,54 +1,209 @@
-
-
-import { useState } from 'react';
-import type { ReportFormData } from '../../types/report.types';
-import { CATEGORIES, STATUS_OPTIONS } from '../../utils/constants';
-import { validateReportForm } from '../../utils/validators';
+import type { Report } from '../../types/report.types';
+import StatusBadge from './statusBadge';
 
 interface Props {
-  mode: 'create' | 'edit';
-  initialData?: ReportFormData;
-  onSubmit: (data: ReportFormData) => void;
-  isSubmitting: boolean;
+  report: Report;
 }
 
-const emptyForm: ReportFormData = {
-  title: '', description: '', category: '', status: 'LOST', location: '',
-};
+export default function ReportDetailView({ report }: Props) {
+  // Format the ISO date safely
+  const formattedDate = report.date
+    ? new Date(report.date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      })
+    : 'N/A';
 
-export default function ReportForm({ initialData, onSubmit, isSubmitting }: Props) {
-  const [form, setForm] = useState<ReportFormData>(initialData || emptyForm);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const { valid, errors } = validateReportForm(form);
-    if (!valid) return setErrors(errors);
-    onSubmit(form);
-  };
+  // Extract reporter name whether reporter is an object (populated) or an ID string
+  const reporterName =
+    typeof report.reporter === 'object' && report.reporter !== null
+      ? report.reporter.name
+      : null;
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Title" />
-      {errors.title && <span>{errors.title}</span>}
+    <article className="report-detail-card" style={{ maxWidth: '650px', margin: '0 auto' }}>
+      {/* Optional Attached Photo */}
+      {report.imagePath && (
+        <div
+          style={{
+            marginBottom: '1.25rem',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            backgroundColor: 'var(--bg-surface, #161b22)',
+            border: '1px solid var(--border-subtle, #30363d)',
+          }}
+        >
+          <img
+            src={report.imagePath}
+            alt={report.title}
+            style={{
+              width: '100%',
+              maxHeight: '380px',
+              objectFit: 'cover',
+              display: 'block',
+            }}
+          />
+        </div>
+      )}
 
-      <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Description" />
-      {errors.description && <span>{errors.description}</span>}
+      {/* Badges Row: Type (LOST / FOUND) + Status (OPEN / RESOLVED) */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          marginBottom: '1rem',
+        }}
+      >
+        <StatusBadge status={report.status} />
+        <span
+          className={`badge ${report.status === 'RESOLVED' ? 'badge-found' : 'badge-lost'}`}
+          style={{ textTransform: 'uppercase' }}
+        >
+          {report.status}
+        </span>
+      </div>
 
-      <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-        <option value="">Select category</option>
-        {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-      </select>
-      {errors.category && <span>{errors.category}</span>}
+      {/* Report Title */}
+      <h2
+        style={{
+          fontSize: '1.75rem',
+          fontWeight: 700,
+          lineHeight: 1.3,
+          marginBottom: '0.75rem',
+          color: 'var(--text-primary, #f0f6fc)',
+        }}
+      >
+        {report.title}
+      </h2>
 
-      <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as 'LOST' | 'FOUND' })}>
-        {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-      </select>
+      {/* Description */}
+      <p
+        style={{
+          color: 'var(--text-secondary, #8b949e)',
+          lineHeight: 1.6,
+          marginBottom: '1.5rem',
+          whiteSpace: 'pre-line',
+        }}
+      >
+        {report.description}
+      </p>
 
-      <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Location" />
-      {errors.location && <span>{errors.location}</span>}
+      {/* Structured Details Grid */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '1rem',
+          padding: '1.25rem',
+          backgroundColor: 'var(--bg-surface, #161b22)',
+          borderRadius: '8px',
+          border: '1px solid var(--border-subtle, #30363d)',
+        }}
+      >
+        <div>
+          <span
+            style={{
+              display: 'block',
+              fontSize: '0.75rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              color: 'var(--text-muted, #6e7681)',
+              marginBottom: '0.25rem',
+            }}
+          >
+            Category
+          </span>
+          <strong style={{ color: 'var(--text-primary, #f0f6fc)' }}>{report.category}</strong>
+        </div>
 
-      <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Saving...' : 'Save'}</button>
-    </form>
+        <div>
+          <span
+            style={{
+              display: 'block',
+              fontSize: '0.75rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              color: 'var(--text-muted, #6e7681)',
+              marginBottom: '0.25rem',
+            }}
+          >
+            Location
+          </span>
+          <strong style={{ color: 'var(--text-primary, #f0f6fc)' }}>{report.location}</strong>
+        </div>
+
+        <div>
+          <span
+            style={{
+              display: 'block',
+              fontSize: '0.75rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              color: 'var(--text-muted, #6e7681)',
+              marginBottom: '0.25rem',
+            }}
+          >
+            Date
+          </span>
+          <strong style={{ color: 'var(--text-primary, #f0f6fc)' }}>{formattedDate}</strong>
+        </div>
+
+        {report.brand && (
+          <div>
+            <span
+              style={{
+                display: 'block',
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: 'var(--text-muted, #6e7681)',
+                marginBottom: '0.25rem',
+              }}
+            >
+              Brand
+            </span>
+            <strong style={{ color: 'var(--text-primary, #f0f6fc)' }}>{report.brand}</strong>
+          </div>
+        )}
+
+        {report.color && (
+          <div>
+            <span
+              style={{
+                display: 'block',
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: 'var(--text-muted, #6e7681)',
+                marginBottom: '0.25rem',
+              }}
+            >
+              Color
+            </span>
+            <strong style={{ color: 'var(--text-primary, #f0f6fc)' }}>{report.color}</strong>
+          </div>
+        )}
+
+        {reporterName && (
+          <div>
+            <span
+              style={{
+                display: 'block',
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: 'var(--text-muted, #6e7681)',
+                marginBottom: '0.25rem',
+              }}
+            >
+              Reported By
+            </span>
+            <strong style={{ color: 'var(--text-primary, #f0f6fc)' }}>{reporterName}</strong>
+          </div>
+        )}
+      </div>
+    </article>
   );
 }
