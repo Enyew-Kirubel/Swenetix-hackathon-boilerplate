@@ -54,7 +54,7 @@ router.get('/profile', verifyToken, getProfileHandler);
  * @swagger
  * /api/users/all:
  *   get:
- *     summary: Get all registered users (Admin only)
+ *     summary: Get all registered users (Librarian only)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
