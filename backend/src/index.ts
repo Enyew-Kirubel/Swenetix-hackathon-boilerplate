@@ -3,11 +3,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth.routes';
+import { setupSwagger } from './docs/swagger';
 dotenv.config();
 
 const app: Express = express();
 const PORT = process.env.PORT || 5000;
-
+setupSwagger(app);
 // Connect to MongoDB
 
 // Middleware
