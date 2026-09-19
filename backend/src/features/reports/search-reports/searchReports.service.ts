@@ -1,4 +1,4 @@
-import Report from "../../../models/Report";
+import Report from "../domain/report.model";
 
 export const searchReports = async (search: string) => {
   const reports = await Report.find({
