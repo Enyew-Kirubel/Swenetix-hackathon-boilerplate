@@ -7,6 +7,7 @@ import { setupSwagger } from './docs/swagger';
 import userRoutes from './routes/user.routes';
 import bookRoutes from './routes/books.route';
 import categoryRoutes from './routes/category.route';
+import borrowRoutes from "./routes/borrow.routes";
 dotenv.config();
 
 const app: Express = express();
@@ -28,6 +29,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use("/api/borrow", borrowRoutes);
 
 mongoose.connect(process.env.MONGO_URI ?? "mongodb://localhost:27017/library_db")
   .then(() => {
