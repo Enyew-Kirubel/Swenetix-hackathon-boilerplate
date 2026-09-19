@@ -2,14 +2,19 @@
   "name": "mern-backend",
   "version": "1.0.0",
   "description": "Simple MERN backend boilerplate with TypeScript",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon",
     "build": "tsc",
-    "start": "node dist/index.js",
-    "lint": "tsc --noEmit"
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
   },
-  "keywords": ["mern", "typescript", "express", "mongodb"],
+  "keywords": [
+    "mern",
+    "typescript",
+    "express",
+    "mongodb"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {

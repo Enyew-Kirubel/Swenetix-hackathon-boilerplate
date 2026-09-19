@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app: Express = express();
-const PORT = process.env.PORT || 5000;
 
 // Connect to MongoDB
 
@@ -17,7 +16,4 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "MERN backend is running" });
 });
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+export default app;
