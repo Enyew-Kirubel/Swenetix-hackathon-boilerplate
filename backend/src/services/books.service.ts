@@ -9,11 +9,12 @@ interface GetBooksOptions {
 }
 
 interface CreateBookData {
-  title: string;    
+  title: string;
   author: string;
   isbn: string;
   categoryId: string;
   description?: string;
+  quantity: number;
 }
 
 interface UpdateBookData {
@@ -22,10 +23,11 @@ interface UpdateBookData {
   isbn?: string;
   categoryId?: string;
   description?: string;
+  quantity: number;
 }
 
 export const createBook = async (data: CreateBookData) => {
-  const { title, author, isbn, categoryId, description } = data;
+  const { title, author, isbn, categoryId, description, quantity } = data;
 
   // Make sure the category exists
   const category = await Category.findById(categoryId);
@@ -41,12 +43,17 @@ export const createBook = async (data: CreateBookData) => {
     throw new Error("A book with this ISBN already exists");
   }
 
+  if (quantity <= 0) {
+    throw new Error("Quantity must be greater than 0");
+  }
+
   const book = await Book.create({
     title,
     author,
     isbn,
     categoryId,
     description,
+    quantity,
   });
 
   return book;
@@ -126,6 +133,10 @@ export const updateBook = async (
     if (!category) {
       throw new Error("Category not found");
     }
+  }
+
+  if(data.quantity <= 0){
+    throw new Error("Quantity must be greater than 0");
   }
 
   // If ISBN is being changed, make sure it isn't already used
