@@ -40,3 +40,50 @@ export const getAllUsersHandler = async (_req: CustomRequest, res: Response): Pr
   }
 };
 
+
+// Librarian: Create a Member account directly
+export const librarianAddMemberHandler = async (req: CustomRequest, res: Response): Promise<Response | void> => {
+  try {
+    const { firstName, lastName, email, role, profileImage } = req.body;
+
+    // 1. Double check for existing user
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Management Error: A user with this email address is already registered." 
+      });
+    }
+
+    // 2. Set an initial fallback temporary password since the Librarian is onboarding them
+    const tempPassword = "TemporaryPassword123!";
+    
+    // 3. Insert record into database (forced to lowerCase emails)
+    const newMember = await User.create({
+      firstName,
+      lastName,
+      email: email.toLowerCase(),
+      password: tempPassword, // Hashed automatically by mongoose model pre-save hook!
+      role: role || "member", // Defaults to member if unspecified
+      profileImage
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "New member account provisioned successfully by librarian.",
+      data: {
+        id: newMember._id,
+        firstName: newMember.firstName,
+        lastName: newMember.lastName,
+        email: newMember.email,
+        role: newMember.role,
+        temporaryPassword: tempPassword // Output it once so the librarian can give it to the user
+      }
+    });
+
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+

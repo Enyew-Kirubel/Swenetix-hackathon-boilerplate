@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getProfileHandler, getAllUsersHandler } from '../controllers/user.controller';
+import { getProfileHandler, getAllUsersHandler, librarianAddMemberHandler } from '../controllers/user.controller';
 import { verifyToken, requireAdmin } from '../middleware/auth'; // Adjust path if needed
 
 const router = Router();
@@ -94,6 +94,54 @@ router.get('/profile', verifyToken, getProfileHandler);
  *         description: Internal server error
  */
 router.get('/all', verifyToken, requireAdmin, getAllUsersHandler);
+
+
+
+/**
+ * @swagger
+ * /api/users/add-member:
+ *   post:
+ *     summary: Create a new member account (Librarian only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - email
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: Alice
+ *               lastName:
+ *                 type: string
+ *                 example: Smith
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: alice@library.com
+ *               role:
+ *                 type: string
+ *                 enum: [member, librarian]
+ *                 default: member
+ *                 example: member
+ *               profileImage:
+ *                 type: string
+ *                 example: https://example.com
+ *     responses:
+ *       201:
+ *         description: Account successfully provisioned
+ *       403:
+ *         description: Forbidden - Requires Librarian role privileges
+ */
+router.post('/add-member', verifyToken, requireAdmin, librarianAddMemberHandler);
+
 
 export default router;
 
