@@ -22,6 +22,9 @@ const reportSchema = new Schema(
 );
 
 reportSchema.index({ title: 'text', description: 'text' });
+reportSchema.index({ date: -1 });
+reportSchema.index({ createdAt: -1 });
+reportSchema.index({ location: 1 });
 
 export type ReportDoc = InferSchemaType<typeof reportSchema>;
 export const Report = model('Report', reportSchema);
