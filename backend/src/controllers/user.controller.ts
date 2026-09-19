@@ -1,4 +1,4 @@
-    import { Response } from 'express';
+import { Response } from 'express';
 import { User } from '../models/User';
 import { CustomRequest } from '../middleware/auth'; // Adjust this path to wherever your verifyToken file is
 
