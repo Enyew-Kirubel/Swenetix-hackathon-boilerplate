@@ -1,7 +1,14 @@
-import { Schema, model, Document } from "mongoose";
-
-export interface ISchema extends Document {}
-
-const schema = new Schema<ISchema>({}, { timestamps: true });
-
-export default model<ISchema>("example", schema);
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+const userSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, enum: ['user', 'admin'], default: 'user' }
+}, { timestamps: true });
+// Magically hash the password before saving to the database
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+export const User = mongoose.model('User', userSchema);
