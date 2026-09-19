@@ -7,6 +7,8 @@ import { setupSwagger } from './docs/swagger';
 import userRoutes from './routes/user.routes';
 import bookRoutes from './routes/books.route';
 import categoryRoutes from './routes/category.route';
+import path from 'path';
+
 dotenv.config();
 
 const app: Express = express();
@@ -18,6 +20,7 @@ setupSwagger(app);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Health check route
 app.get("/", (_req: Request, res: Response) => {
