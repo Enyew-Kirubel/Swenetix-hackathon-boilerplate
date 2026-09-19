@@ -1,9 +1,9 @@
-import { Request, Response } from "Express";
-import Report from "../create-report/report.model";
+import { Request, Response } from "express";
+import { getAllReports } from "./getReports.service";
 
-export const getReports = async (req: Request, res: Response) => {
+export const getReports = async (_req: Request, res: Response) => {
   try {
-    const reports = await Report.find().sort({ createdAt: -1 });
+    const reports = await getAllReports();
 
     return res.status(200).json({
       success: true,

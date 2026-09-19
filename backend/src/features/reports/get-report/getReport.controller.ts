@@ -1,11 +1,9 @@
-import { Request, Response } from "Express";
-import Report from "../create-report/report.model";
+import { Request, Response } from "express";
+import { getReportById } from "./getReport.service";
 
 export const getReport = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-
-    const report = await Report.findById(id);
+    const report = await getReportById(req.params.id);
 
     if (!report) {
       return res.status(404).json({
@@ -14,17 +12,16 @@ export const getReport = async (req: Request, res: Response) => {
       });
     }
 
-      return res.status(200).json({
-        success: true,
-        report,
-      });
-    } catch (error) {
-
+    return res.status(200).json({
+      success: true,
+      report,
+    });
+  } catch (error) {
     console.error("Error fetching report:", error);
 
     return res.status(500).json({
       success: false,
-      message: "Failed to fetch Report",
+      message: "Failed to fetch report",
     });
   }
 };
