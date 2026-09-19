@@ -42,3 +42,20 @@ export const loginHandler = async (req: Request, res: Response): Promise<Respons
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
+// Logout Handler
+export const logoutHandler = async (_req: Request, res: Response): Promise<Response | void> => {
+  try {
+    // For stateless JWTs, we tell the frontend to delete the token from local storage/cookies.
+    // If you ever use HTTP-only cookies in the future, this clears them automatically.
+    res.clearCookie('token'); 
+    
+    return res.status(200).json({ 
+      success: true, 
+      message: "Logged out successfully. Please remove your token from client storage." 
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
