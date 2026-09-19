@@ -123,3 +123,12 @@ export const MOCK_REPORTS: Report[] = [
     updatedAt: '2026-09-18T16:45:00.000Z'
   }
 ];
+
+// // src/dummy/mock.ts
+// import type { User } from '../types/report.types';
+
+// export const MOCK_USER: User = {
+//   _id: 'user_101',
+//   name: 'Alex Rivera',
+//   email: 'alex.rivera@example.com',
+// };
