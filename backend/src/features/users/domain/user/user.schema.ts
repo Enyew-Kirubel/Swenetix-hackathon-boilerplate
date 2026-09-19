@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
-import { USER_ROLES } from "./user.constants.js";
-import type { IUserDocument } from "./user.types.js";
+import { USER_ROLES } from "./user.constants";
+import type { IUserDocument } from "./user.types";
 
 export const userSchema = new Schema<IUserDocument>(
   {
@@ -51,6 +51,12 @@ export const userSchema = new Schema<IUserDocument>(
   },
   {
     timestamps: true,
+    toJSON: {
+      transform: (_doc, ret: Record<string, unknown>) => {
+        const { passwordHash, __v, ...cleanUser } = ret;
+        return cleanUser;
+      },
+    },
   },
 );
 
