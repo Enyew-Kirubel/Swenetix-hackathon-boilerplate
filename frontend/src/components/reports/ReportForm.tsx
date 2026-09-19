@@ -136,7 +136,7 @@ export default function ReportForm({ mode, initialData, onSubmit, isSubmitting }
           id="category"
           name="category"
           value={form.category}
-          onChange={(e) => setForm({ ...form, category: e.target.value as LostItemCategory })}
+          onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value as LostItemCategory }))}
         >
           {Object.values(LostItemCategory).map((cat) => (
             <option key={cat} value={cat}>
@@ -148,7 +148,7 @@ export default function ReportForm({ mode, initialData, onSubmit, isSubmitting }
       </div>
 
       {/* Image Upload Input (Exclusively visible when type === 'LOST') */}
-      {!isLost && (
+      {isLost && (
         <div
           style={{
             border: '1px dashed var(--border-subtle, #30363d)',
@@ -280,7 +280,7 @@ export default function ReportForm({ mode, initialData, onSubmit, isSubmitting }
             id="status"
             name="status"
             value={form.status || 'OPEN'}
-            onChange={(e) => setForm({ ...form, status: e.target.value as 'OPEN' | 'RESOLVED' })}
+            onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value as 'OPEN' | 'RESOLVED' }))}
           >
             <option value="OPEN">OPEN</option>
             <option value="RESOLVED">RESOLVED</option>

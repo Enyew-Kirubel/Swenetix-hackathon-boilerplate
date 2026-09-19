@@ -9,18 +9,8 @@ interface Props {
 export default function ReportCard({ report, onClick }: Props) {
   return (
     <div className="report-card" onClick={onClick}>
-      {/* 1. Use report.type ('LOST' | 'FOUND') for StatusBadge */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <StatusBadge status={report.status} />
-        
-        {/* Optional: Show whether it is OPEN or RESOLVED */}
-        <span
-          className={`badge ${report.status === 'RESOLVED' ? 'badge-found' : 'badge-lost'}`}
-          style={{ fontSize: '0.7rem' }}
-        >
-          {report.status}
-        </span>
-      </div>
+      {/* Status (OPEN / RESOLVED) */}
+      <StatusBadge status={report.status} />
 
       {/* Optional image thumbnail if available */}
       {report.imagePath && (

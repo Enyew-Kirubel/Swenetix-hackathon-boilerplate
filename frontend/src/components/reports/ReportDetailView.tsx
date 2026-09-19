@@ -47,7 +47,7 @@ export default function ReportDetailView({ report }: Props) {
         </div>
       )}
 
-      {/* Badges Row: Type (LOST / FOUND) + Status (OPEN / RESOLVED) */}
+      {/* Status (OPEN / RESOLVED) */}
       <div
         style={{
           display: 'flex',
@@ -57,12 +57,6 @@ export default function ReportDetailView({ report }: Props) {
         }}
       >
         <StatusBadge status={report.status} />
-        <span
-          className={`badge ${report.status === 'RESOLVED' ? 'badge-found' : 'badge-lost'}`}
-          style={{ textTransform: 'uppercase' }}
-        >
-          {report.status}
-        </span>
       </div>
 
       {/* Report Title */}
