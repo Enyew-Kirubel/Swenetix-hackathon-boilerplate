@@ -1,3 +1,4 @@
+// src/components/reports/ReportForm.tsx
 import React, { useState, useEffect } from 'react';
 import { ReportFormData, LostItemCategory } from '../../types/report.types';
 import { validateReportForm } from '../../utils/validators';
@@ -5,7 +6,7 @@ import { validateReportForm } from '../../utils/validators';
 interface Props {
   mode: 'create' | 'edit';
   initialData?: ReportFormData;
-  onSubmit: (data: ReportFormData) => void;
+  onSubmit: (data: ReportFormData, file?: File | null) => void;
   isSubmitting: boolean;
 }
 
@@ -18,28 +19,51 @@ const emptyForm: ReportFormData = {
   date: new Date().toISOString().split('T')[0],
   color: '',
   brand: '',
+  imagePath: '',
   status: 'OPEN',
 };
 
 export default function ReportForm({ mode, initialData, onSubmit, isSubmitting }: Props) {
   const [form, setForm] = useState<ReportFormData>(initialData || emptyForm);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialData?.imagePath || null);
   const [errors, setErrors] = useState<Partial<Record<keyof ReportFormData, string>>>({});
 
-  // Sync initialData when fetched asynchronously in Edit mode
+  // Sync state if editing
   useEffect(() => {
     if (initialData) {
       setForm({
         ...initialData,
         date: initialData.date ? initialData.date.split('T')[0] : new Date().toISOString().split('T')[0],
       });
+      if (initialData.imagePath) {
+        setPreviewUrl(initialData.imagePath);
+      }
     }
   }, [initialData]);
 
+  // Handle text/select changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle image upload & preview (Only for LOST reports)
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+      // For immediate preview in mock data/UI
+      setForm((prev) => ({ ...prev, imagePath: objectUrl }));
+    }
+  };
+
+  const handleTypeToggle = (type: 'LOST' | 'FOUND') => {
+    setForm((prev) => ({ ...prev, type }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -49,61 +73,151 @@ export default function ReportForm({ mode, initialData, onSubmit, isSubmitting }
       setErrors(errors);
       return;
     }
-    onSubmit(form);
+    onSubmit(form, selectedFile);
   };
 
+  const isLost = form.type === 'LOST';
+
   return (
-    <form onSubmit={handleSubmit}>
-      {/* Type: LOST or FOUND */}
-      <label htmlFor="type">Report Type</label>
-      <select
-        id="type"
-        name="type"
-        value={form.type}
-        onChange={(e) => setForm({ ...form, type: e.target.value as 'LOST' | 'FOUND' })}
-      >
-        <option value="LOST">LOST</option>
-        <option value="FOUND">FOUND</option>
-      </select>
-      {errors.type && <span>{errors.type}</span>}
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      {/* Type Selector Tabs */}
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+        <button
+          type="button"
+          onClick={() => handleTypeToggle('LOST')}
+          style={{
+            flex: 1,
+            padding: '0.6rem',
+            backgroundColor: isLost ? 'var(--danger, #f85149)' : 'var(--bg-elevated, #21262d)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          Lost Item
+        </button>
+        <button
+          type="button"
+          onClick={() => handleTypeToggle('FOUND')}
+          style={{
+            flex: 1,
+            padding: '0.6rem',
+            backgroundColor: !isLost ? 'var(--brand-primary, #238636)' : 'var(--bg-elevated, #21262d)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          Found Item
+        </button>
+      </div>
 
       {/* Title */}
-      <label htmlFor="title">Title</label>
-      <input
-        id="title"
-        name="title"
-        value={form.title}
-        onChange={handleChange}
-        placeholder="e.g. MacBook Pro 14 inch"
-      />
-      {errors.title && <span>{errors.title}</span>}
+      <div>
+        <label htmlFor="title">
+          {isLost ? 'What did you lose?' : 'What item did you find?'}
+        </label>
+        <input
+          id="title"
+          name="title"
+          value={form.title}
+          onChange={handleChange}
+          placeholder={isLost ? 'e.g. Space Gray MacBook Pro 14' : 'e.g. Leather Bi-Fold Wallet'}
+        />
+        {errors.title && <span style={{ color: 'var(--danger)' }}>{errors.title}</span>}
+      </div>
 
       {/* Category Dropdown */}
-      <label htmlFor="category">Category</label>
-      <select
-        id="category"
-        name="category"
-        value={form.category}
-        onChange={(e) => setForm({ ...form, category: e.target.value as LostItemCategory })}
-      >
-        {Object.values(LostItemCategory).map((cat) => (
-          <option key={cat} value={cat}>
-            {cat}
-          </option>
-        ))}
-      </select>
-      {errors.category && <span>{errors.category}</span>}
+      <div>
+        <label htmlFor="category">Category</label>
+        <select
+          id="category"
+          name="category"
+          value={form.category}
+          onChange={(e) => setForm({ ...form, category: e.target.value as LostItemCategory })}
+        >
+          {Object.values(LostItemCategory).map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+        {errors.category && <span style={{ color: 'var(--danger)' }}>{errors.category}</span>}
+      </div>
+
+      {/* Image Upload Input (Exclusively visible when type === 'LOST') */}
+      {!isLost && (
+        <div
+          style={{
+            border: '1px dashed var(--border-subtle, #30363d)',
+            borderRadius: '8px',
+            padding: '1rem',
+            backgroundColor: 'var(--bg-elevated, #1b2028)',
+          }}
+        >
+          <label htmlFor="imageFile" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+            Upload Reference Photo of Lost Item
+          </label>
+          <input
+            id="imageFile"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={{ marginBottom: '0.5rem' }}
+          />
+
+          {previewUrl && (
+            <div style={{ marginTop: '0.75rem', position: 'relative' }}>
+              <img
+                src={previewUrl}
+                alt="Selected preview"
+                style={{
+                  width: '100%',
+                  maxHeight: '220px',
+                  objectFit: 'cover',
+                  borderRadius: '6px',
+                  border: '1px solid var(--border-subtle, #30363d)',
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setPreviewUrl(null);
+                  setSelectedFile(null);
+                  setForm((prev) => ({ ...prev, imagePath: '' }));
+                }}
+                style={{
+                  marginTop: '0.5rem',
+                  fontSize: '0.8rem',
+                  padding: '0.3rem 0.6rem',
+                  backgroundColor: 'var(--danger, #f85149)',
+                }}
+              >
+                Remove photo
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Description */}
-      <label htmlFor="description">Description</label>
-      <textarea
-        id="description"
-        name="description"
-        value={form.description}
-        onChange={handleChange}
-        placeholder="Details, identifying marks, serial numbers, stickers..."
-      />
-      {errors.description && <span>{errors.description}</span>}
+      <div>
+        <label htmlFor="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          placeholder={
+            isLost
+              ? 'Provide details, stickers, scratches, or unique serials that prove it is yours...'
+              : 'Describe visible appearance, location circumstances, or where the owner can claim it...'
+          }
+        />
+        {errors.description && <span style={{ color: 'var(--danger)' }}>{errors.description}</span>}
+      </div>
 
       {/* Brand & Color */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -114,7 +228,7 @@ export default function ReportForm({ mode, initialData, onSubmit, isSubmitting }
             name="brand"
             value={form.brand || ''}
             onChange={handleChange}
-            placeholder="e.g. Apple, Lenovo"
+            placeholder="e.g. Apple, Lenovo, Sony"
           />
         </div>
         <div>
@@ -124,37 +238,44 @@ export default function ReportForm({ mode, initialData, onSubmit, isSubmitting }
             name="color"
             value={form.color || ''}
             onChange={handleChange}
-            placeholder="e.g. Space Gray, Black"
+            placeholder="e.g. Black, Brown, Silver"
           />
         </div>
       </div>
 
-      {/* Location */}
-      <label htmlFor="location">Location</label>
-      <input
-        id="location"
-        name="location"
-        value={form.location}
-        onChange={handleChange}
-        placeholder="e.g. Central Library, 3rd Floor"
-      />
-      {errors.location && <span>{errors.location}</span>}
+      {/* Location & Date */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div>
+          <label htmlFor="location">
+            {isLost ? 'Last seen location' : 'Where was it found?'}
+          </label>
+          <input
+            id="location"
+            name="location"
+            value={form.location}
+            onChange={handleChange}
+            placeholder="e.g. Library 3rd floor"
+          />
+          {errors.location && <span style={{ color: 'var(--danger)' }}>{errors.location}</span>}
+        </div>
 
-      {/* Date */}
-      <label htmlFor="date">Date</label>
-      <input
-        type="date"
-        id="date"
-        name="date"
-        value={form.date}
-        onChange={handleChange}
-      />
-      {errors.date && <span>{errors.date}</span>}
+        <div>
+          <label htmlFor="date">{isLost ? 'Date lost' : 'Date found'}</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value={form.date}
+            onChange={handleChange}
+          />
+          {errors.date && <span style={{ color: 'var(--danger)' }}>{errors.date}</span>}
+        </div>
+      </div>
 
-      {/* Status (Edit mode only: OPEN or RESOLVED) */}
+      {/* Edit Mode Only: Status toggle */}
       {mode === 'edit' && (
         <div>
-          <label htmlFor="status">Status</label>
+          <label htmlFor="status">Report Status</label>
           <select
             id="status"
             name="status"
@@ -167,8 +288,22 @@ export default function ReportForm({ mode, initialData, onSubmit, isSubmitting }
         </div>
       )}
 
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create Report' : 'Save Changes'}
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        style={{
+          backgroundColor: isLost ? 'var(--danger, #f85149)' : 'var(--brand-primary, #238636)',
+          padding: '0.75rem',
+          fontWeight: 600,
+        }}
+      >
+        {isSubmitting
+          ? 'Saving...'
+          : mode === 'create'
+          ? isLost
+            ? 'Publish Lost Item Report'
+            : 'Publish Found Item Report'
+          : 'Save Changes'}
       </button>
     </form>
   );
